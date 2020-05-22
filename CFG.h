@@ -16,7 +16,25 @@ protected:
 public:
     CFG() = default;
     CFG(map<string, set<string>>P, set<string>N, set<string>T, string S) :P(P), N(N), T(T), S(S) {};
-    friend void config(CFG&); //used a custom CFG for testing
-    void step1();
+    void printGrammar();
+
+    //METHODS FOR TESTING
+
+    friend void config1(CFG&); //used a custom CFG for testing
+    friend void config2(CFG&); //used a custom CFG for testing
+    friend void config3(CFG&); //used a custom CFG for testing
+    friend void config4(CFG&); //used a custom CFG for testing
+    friend void config5(CFG&); //dani
+
+    //METHODS FOR CFG->CNF conversion
+
+    void step1(); //removes unusable and inaccesible non-terminals and productions
+
+    //HELPER METHODS:
+
+    set<string> usableN(); //returns the usable non-terminals
+    void removeUnusable(); //removes unusable non-terminals and productions
+    void removeInaccessible(); //removes inaccessbile non-terminals and productions
+
 };
 

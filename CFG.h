@@ -24,11 +24,13 @@ public:
     friend void config2(CFG&); //used a custom CFG for testing
     friend void config3(CFG&); //used a custom CFG for testing
     friend void config4(CFG&); //used a custom CFG for testing
-    friend void config5(CFG&); //dani
+    friend void config5(CFG&); //test seminar
+    friend void config6(CFG&);
 
     //METHODS FOR CFG->CNF conversion
 
     void step1(); //removes unusable and inaccesible non-terminals and productions
+    void step2(); //removing lambda-productions
 
     //HELPER METHODS:
 

@@ -1,5 +1,6 @@
 #include "CFG.h"
 
+#pragma region CONFIGS
 void config1(CFG& x) {
     x.S = "S";
     x.N.insert("S"); x.N.insert("A"); x.N.insert("B");
@@ -39,15 +40,16 @@ void config4(CFG& x) {
 }
 void config5(CFG& x) {
     x.S = "S";
-    x.T.insert("a"); x.T.insert("b");
-    x.N.insert("S"); x.N.insert("A"); x.N.insert("B"); x.N.insert("C"); 
-    x.N.insert("D"); x.N.insert("E");
-    x.P["S"].insert("A"); x.P["S"].insert("D"); x.P["B"].insert("bC"); 
-    x.P["A"].insert("Ba"); x.P["A"].insert("E"); x.P["C"].insert("A"); 
-    x.P["D"].insert("aD"); x.P["D"].insert("a"); x.P["E"].insert("C");
-
+    x.T.insert("a"); x.T.insert("b"); x.T.insert("c"); x.T.insert("d");
+    x.T.insert("e"); x.T.insert("f"); x.T.insert("g"); x.T.insert("#");
+    x.N.insert("S"); x.N.insert("B"); x.N.insert("D"); x.N.insert("F"); 
+    x.N.insert("G"); x.N.insert("H");
+    x.P["S"].insert("aBcDeF"); x.P["S"].insert("HF"); x.P["S"].insert("HBc"); 
+    x.P["B"].insert("b"); x.P["B"].insert("#"); x.P["D"].insert("d"); 
+    x.P["D"].insert("#"); x.P["F"].insert("G"); x.P["G"].insert("f");
+    x.P["G"].insert("g"); x.P["H"].insert("#");
 }
-
+#pragma endregion
 
 void CFG::printGrammar() {
     for (auto p : P) {
@@ -64,7 +66,95 @@ void CFG::step1() {
     removeInaccessible();
 }
 
-//HELPER METHODS:
+void CFG::step2() {
+    for (auto rhs : P[S]) {
+        if (rhs == "#") {
+            //if the start symbol has a lambda production
+            //we make a new production S'-> S | lambda 
+            //and S' becomes the new starting symbol
+            string newS = "S'";
+            P[S].erase("#");
+            P[newS].insert(S);
+            P[newS].insert("#");
+            S = newS;
+            N.insert(S);
+            break;
+        }
+    }
+    map<string, set<string>>newP(P);
+    for (auto p : newP) {
+        //for each production
+        for (auto rhs : p.second) {
+            if (rhs == "#") {
+                if (p.second.size() == 1){
+                    //if it only has a lambda production
+                    string lhs=p.first; //the lhs of the production
+                    P.erase(lhs);//delete the whole production
+                    //now we must remake the productions
+                    //containing that non-terminal
+                    for (auto p2 : P) {
+                        set<string> newRHS;
+                        for (auto rhs2 : p2.second) {
+                            string replaceWith;
+                            bool needsReplacement = false;
+                            for (auto sy : rhs2) {
+                                string s;
+                                s += sy;
+                                if (s != lhs) replaceWith += sy; //this should contain the string that should substitute the old one
+                                if (s == lhs) {
+                                    needsReplacement = true;
+                                }
+                            }
+                            if (needsReplacement) {
+                                if (rhs2.size() >= 2) {
+                                    newRHS.insert(replaceWith);
+                                }
+                                if (rhs2.size() == 1) {
+                                    newRHS.insert(replaceWith);
+                                }
+                            }
+                            else {
+                                newRHS.insert(rhs2);
+                            }
+                        }
+                        P[p2.first] = newRHS;
+                    }
+                }
+                if (p.second.size() > 1 && p.first!=S) {
+                    string lhs = p.first;
+                    P[lhs].erase("#"); //we only delete the lambda production
+                    for (auto p2 : P) {
+                        set<string> newRHS;
+                        for (auto rhs2 : p2.second) {
+                            string replaceWith;
+                            bool needsReplacement = false;
+                            for (auto sy : rhs2) {
+                                string s;
+                                s += sy;
+                                if (s != lhs) replaceWith += sy; //this should contain the string that should substitute the old one
+                                if (s == lhs) {
+                                    needsReplacement = true;
+                                }
+                            }
+                            if (needsReplacement) {
+                                newRHS.insert(rhs2);
+                                if (rhs2.size() >= 2) {
+                                    newRHS.insert(replaceWith);
+                                }
+                            }
+                            else {
+                                newRHS.insert(rhs2);
+                            }
+                        }
+                        P[p2.first] = newRHS;
+                    }
+                }
+            }
+        }
+    }
+}
+
+#pragma region HELPERS
 
 set<string> CFG::usableN() {
     //eliminating unusable symbols and productions
@@ -157,7 +247,6 @@ void CFG::removeUnusable() {
     }
     N = usable;
 }
-
 void CFG::removeInaccessible() {
     set<string>accessible;
     accessible.insert(S); //the start symbol is always accessible
@@ -196,3 +285,5 @@ void CFG::removeInaccessible() {
     }
     N = accessible;
 }
+
+#pragma endregion

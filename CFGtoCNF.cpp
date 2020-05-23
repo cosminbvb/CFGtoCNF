@@ -2,33 +2,36 @@
 #include <iostream>
 using namespace std;
 
+void config6(CFG& x) {
+	x.S = "S";
+	x.T.insert("a"); x.T.insert("b"); x.T.insert("#");
+	x.N.insert("S"); x.N.insert("B"); x.N.insert("C"); x.N.insert("A");
+	x.P["S"].insert("aAbC"); x.P["S"].insert("aB"); x.P["A"].insert("aAC");
+	x.P["A"].insert("#"); x.P["B"].insert("#"); x.P["B"].insert("C");
+	x.P["C"].insert("CA"); x.P["C"].insert("b");
+}
+
 int main()
 {
-	CFG g2;
-	config2(g2);
-	g2.removeUnusable();
-	g2.printGrammar();
-	cout << endl;
-	//right answer
-
-	CFG g4;
-	config4(g4);
-	g4.removeUnusable();
-	g4.printGrammar();
-	cout << endl;
-	//right answer
-
 	CFG g1;
 	config1(g1);
-	g1.removeInaccessible();
+	g1.step1();
+	g1.step2();
 	g1.printGrammar();
-	//right answer
 
-	cout << "------------" << endl;
+	cout << "-------------------" << endl;
 
-	CFG dani;
-	config5(dani);
-	dani.step1();
-	dani.printGrammar();
+	CFG testSeminar;
+	config5(testSeminar);
+	testSeminar.step2();
+	testSeminar.printGrammar();
+	//step2 correct
 
+	cout << "-------------------" << endl;
+
+
+	CFG test;
+	config6(test);
+	test.step2();
+	test.printGrammar();
 }

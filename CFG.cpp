@@ -215,10 +215,39 @@ void CFG::step3() {
 
 void CFG::step4() {
     //we will add non-terminals of type "Xnumber" where numbers starts from 1
+    int number = 1;
+    string X = "";
+    map<string, string>substitution;//terminal->non-terminal
     for (auto p : P) {
+        set<string> newRHS;
         for (auto rhs : p.second) {
-
+            string newS;
+            for (char c : rhs) {
+                string s;
+                s += c;
+                if (T.find(s) != T.end() && rhs.size() > 1) {
+                    //if the rhs of the production has a minimum size of 2
+                    //and contains terminals
+                    if (substitution[s]=="") {
+                        //if the substitution doesn't exist yet, we create it
+                        X = "X" + to_string(number);
+                        while (N.find(X) != N.end()) {
+                            number++;
+                            X = "X" + to_string(number);
+                        }
+                        N.insert(X);
+                        substitution[s] = X;
+                        P[X].insert(s); //we add it in the productions map
+                    }
+                    newS += substitution[s];
+                }
+                else {
+                    newS += s;
+                }
+            }
+            newRHS.insert(newS);
         }
+        P[p.first] = newRHS;
     }
 }
 

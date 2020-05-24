@@ -18,26 +18,20 @@ int main()
 	config1(g1);
 	g1.step1();
 	g1.step2();
-	g1.printGrammar();
-	cout << endl;
 	g1.step3();
 	g1.step1();
+	g1.step4();
 	g1.printGrammar();
-
 	cout << "-------------------" << endl;
 
 	cout << "Test Sem: " << endl;
 	CFG testSeminar;
 	config5(testSeminar);
 	testSeminar.step2();
-	//testSeminar.printGrammar();
-	//cout << endl;
 	testSeminar.step3();
-	//testSeminar.printGrammar();
-	//cout << endl;
 	testSeminar.step1();
+	testSeminar.step4();
 	testSeminar.printGrammar();
-	//step2 correct
 
 	cout << "-------------------" << endl;
 

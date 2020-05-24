@@ -35,6 +35,8 @@ public:
     void step3(); //eliminating N->N productions
     //step1() needs to be called once again after step3() is done
     void step4(); //replacing terminals that are part of a word with len>=2 with new non-terminals
+    void step5();
+
 
     //HELPER METHODS:
 

@@ -16,6 +16,7 @@ protected:
 public:
     CFG() = default;
     CFG(map<string, set<string>>P, set<string>N, set<string>T, string S) :P(P), N(N), T(T), S(S) {};
+    CFG(const CFG&); //copy constructor used in step2()
     void printGrammar();
 
     //METHODS FOR TESTING
@@ -31,6 +32,9 @@ public:
 
     void step1(); //removes unusable and inaccesible non-terminals and productions
     void step2(); //removing lambda-productions
+    void step3(); //eliminating N->N productions
+    //step1() needs to be called once again after step3() is done
+    void step4();
 
     //HELPER METHODS:
 

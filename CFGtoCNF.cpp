@@ -13,25 +13,39 @@ void config6(CFG& x) {
 
 int main()
 {
+	cout << "Test Lab: " << endl;
 	CFG g1;
 	config1(g1);
 	g1.step1();
 	g1.step2();
 	g1.printGrammar();
+	cout << endl;
+	g1.step3();
+	g1.step1();
+	g1.printGrammar();
 
 	cout << "-------------------" << endl;
 
+	cout << "Test Sem: " << endl;
 	CFG testSeminar;
 	config5(testSeminar);
 	testSeminar.step2();
+	//testSeminar.printGrammar();
+	//cout << endl;
+	testSeminar.step3();
+	//testSeminar.printGrammar();
+	//cout << endl;
+	testSeminar.step1();
 	testSeminar.printGrammar();
 	//step2 correct
 
 	cout << "-------------------" << endl;
 
+	CFG g;
+	config2(g);
+	g.step1();
+	g.step2();
+	//g.step3();
+	g.printGrammar();
 
-	CFG test;
-	config6(test);
-	test.step2();
-	test.printGrammar();
 }

@@ -15,30 +15,6 @@ void config1(CFG& x) {
 }
 void config2(CFG& x) {
     x.S = "S";
-    x.N.insert("S"); x.N.insert("A"); x.N.insert("B"); x.N.insert("C");
-    x.T.insert("a"); x.T.insert("b"); x.T.insert("#");
-    x.P["S"].insert("A"); x.P["S"].insert("a");
-    x.P["A"].insert("B"); x.P["A"].insert("b"); 
-    x.P["B"].insert("#"); 
-}
-void config3(CFG& x) {
-    x.S = "S";
-    x.N.insert("S"); x.N.insert("A"); x.N.insert("B");
-    x.T.insert("#"); x.T.insert("a"); x.T.insert("b");
-    x.P["S"].insert("aSb"); x.P["S"].insert("aA");
-    x.P["A"].insert("aA"); x.P["A"].insert("bB"); x.P["A"].insert("#");
-    x.P["B"].insert("bBb");
-}
-void config4(CFG& x) {
-    x.S = "S";
-    x.N.insert("S"); x.N.insert("A"); x.N.insert("B"); x.N.insert("C");
-    x.T.insert("a"); x.T.insert("b");
-    x.P["S"].insert("AB"); x.P["S"].insert("CA");
-    x.P["A"].insert("a"); x.P["B"].insert("BC"); x.P["B"].insert("AB");
-    x.P["C"].insert("AB"); x.P["C"].insert("b");
-}
-void config5(CFG& x) {
-    x.S = "S";
     x.T.insert("a"); x.T.insert("b"); x.T.insert("c"); x.T.insert("d");
     x.T.insert("e"); x.T.insert("f"); x.T.insert("g"); x.T.insert("#");
     x.N.insert("S"); x.N.insert("B"); x.N.insert("D"); x.N.insert("F"); 
@@ -66,6 +42,18 @@ void CFG::printGrammar() {
         cout << endl;
     }
 }
+
+void CFG::toCNF() {
+    step1();
+    step2();
+    step3();
+    step1();
+    step4();
+    step5();
+}
+
+
+#pragma region CFG->CNF steps 
 
 void CFG::step1() {
     removeUnusable();
@@ -251,6 +239,46 @@ void CFG::step4() {
     }
 }
 
+void CFG::step5() {
+    //we will add non-terminals of type "Ynumber" where numbers starts from 1
+    int number = 1;
+    string Y = "";
+    map<string, string>substitution; //word containing non-terminals -> non-terminal
+    bool hasModified = true;
+    //while (hasModified) {
+        //hasModified = false;
+        for (auto p : P) {
+            set<string>newRHS;
+            for (auto rhs : p.second) {
+                string newS;
+                if (hasAtLeast3N(rhs)) {
+                    hasModified = true;
+                    string needsSub = getAllExceptFirst(rhs); //the string that needs to be replaced
+                    string firstN = getFirstN(rhs);
+                    if (substitution[needsSub] == "") {
+                        //if the substitution doesn't exist yet, we create it
+                        Y = "Y" + to_string(number);
+                        while (N.find(Y) != N.end()) {
+                            number++;
+                            Y = "Y" + to_string(number);
+                        }
+                        N.insert(Y);
+                        substitution[needsSub] = Y;
+                        P[Y].insert(needsSub); //we add it in the productions map
+                    }
+                    newS = firstN + substitution[needsSub];
+                }
+                else {
+                    newS = rhs;
+                }
+                newRHS.insert(newS);
+            }
+            P[p.first] = newRHS;
+        }
+}
+
+#pragma endregion
+
 #pragma region HELPERS
 
 set<string> CFG::usableN() {
@@ -388,6 +416,37 @@ bool CFG::hasLambda() {
             if (rhs == "#" && p.first!=S) {
                 return true;
             }
+        }
+    }
+    return false;
+}
+string CFG::getAllExceptFirst(string s) {
+    //in a string containing non-terminals
+    //it will return the string without the first terminal
+    int i = 1;
+    string temp = s.substr(0, i);
+    while (N.find(temp) == N.end() && i<s.size()) {
+        i++;
+        temp = s.substr(0, i);
+    }
+    return s.substr(i,s.size());
+}
+string CFG::getFirstN(string s) {
+    int i = 1;
+    string temp = s.substr(0, i);
+    while (N.find(temp) == N.end()) {
+        i++;
+        temp = s.substr(0, i);
+    }
+    return temp;
+}
+bool CFG::hasAtLeast3N(string s) {
+    bool ok = false;
+    string temp = getAllExceptFirst(s); //BBb //Bb //b
+    if (temp != "") {
+        temp = getAllExceptFirst(temp);
+        if (temp != "") {
+            return true;
         }
     }
     return false;

@@ -113,73 +113,74 @@ void CFG::step2() {
             N.insert(S);
         }
     }
-
-    map<string, set<string>>newP(P);
-    for (auto p : newP) {
-        //for each production
-        for (auto rhs : p.second) {
-            if (rhs == "#") {
-                if (p.second.size() == 1){
-                    //if it only has a lambda production
-                    string lhs=p.first; //the lhs of the production
-                    P.erase(lhs);//delete the whole production
-                    //now we must remake the productions
-                    //containing that non-terminal
-                    for (auto p2 : P) {
-                        set<string> newRHS;
-                        for (auto rhs2 : p2.second) {
-                            string replaceWith;
-                            bool needsReplacement = false;
-                            for (auto sy : rhs2) {
-                                string s;
-                                s += sy;
-                                if (s != lhs) replaceWith += sy; //this should contain the string that should substitute the old one
-                                if (s == lhs) {
-                                    needsReplacement = true;
+    while (hasLambda()) {
+        map<string, set<string>>newP(P);
+        for (auto p : newP) {
+            //for each production
+            for (auto rhs : p.second) {
+                if (rhs == "#") {
+                    if (p.second.size() == 1) {
+                        //if it only has a lambda production
+                        string lhs = p.first; //the lhs of the production
+                        P.erase(lhs);//delete the whole production
+                        //now we must remake the productions
+                        //containing that non-terminal
+                        for (auto p2 : P) {
+                            set<string> newRHS;
+                            for (auto rhs2 : p2.second) {
+                                string replaceWith;
+                                bool needsReplacement = false;
+                                for (auto sy : rhs2) {
+                                    string s;
+                                    s += sy;
+                                    if (s != lhs) replaceWith += sy; //this should contain the string that should substitute the old one
+                                    if (s == lhs) {
+                                        needsReplacement = true;
+                                    }
+                                }
+                                if (needsReplacement) {
+                                    if (rhs2.size() >= 2) {
+                                        newRHS.insert(replaceWith);
+                                    }
+                                    if (rhs2.size() == 1) {
+                                        newRHS.insert("#");
+                                    }
+                                }
+                                else {
+                                    newRHS.insert(rhs2);
                                 }
                             }
-                            if (needsReplacement) {
-                                if (rhs2.size() >= 2) {
-                                    newRHS.insert(replaceWith);
-                                }
-                                if (rhs2.size() == 1) {
-                                    newRHS.insert(replaceWith);
-                                }
-                            }
-                            else {
-                                newRHS.insert(rhs2);
-                            }
+                            P[p2.first] = newRHS;
                         }
-                        P[p2.first] = newRHS;
                     }
-                }
-                if (p.second.size() > 1 && p.first!=S) {
-                    string lhs = p.first;
-                    P[lhs].erase("#"); //we only delete the lambda production
-                    for (auto p2 : P) {
-                        set<string> newRHS;
-                        for (auto rhs2 : p2.second) {
-                            string replaceWith;
-                            bool needsReplacement = false;
-                            for (auto sy : rhs2) {
-                                string s;
-                                s += sy;
-                                if (s != lhs) replaceWith += sy; //this should contain the string that should substitute the old one
-                                if (s == lhs) {
-                                    needsReplacement = true;
+                    if (p.second.size() > 1 && p.first != S) {
+                        string lhs = p.first;
+                        P[lhs].erase("#"); //we only delete the lambda production
+                        for (auto p2 : P) {
+                            set<string> newRHS;
+                            for (auto rhs2 : p2.second) {
+                                string replaceWith;
+                                bool needsReplacement = false;
+                                for (auto sy : rhs2) {
+                                    string s;
+                                    s += sy;
+                                    if (s != lhs) replaceWith += sy; //this should contain the string that should substitute the old one
+                                    if (s == lhs) {
+                                        needsReplacement = true;
+                                    }
+                                }
+                                if (needsReplacement) {
+                                    newRHS.insert(rhs2);
+                                    if (rhs2.size() >= 2) {
+                                        newRHS.insert(replaceWith);
+                                    }
+                                }
+                                else {
+                                    newRHS.insert(rhs2);
                                 }
                             }
-                            if (needsReplacement) {
-                                newRHS.insert(rhs2);
-                                if (rhs2.size() >= 2) {
-                                    newRHS.insert(replaceWith);
-                                }
-                            }
-                            else {
-                                newRHS.insert(rhs2);
-                            }
+                            P[p2.first] = newRHS;
                         }
-                        P[p2.first] = newRHS;
                     }
                 }
             }
@@ -213,7 +214,12 @@ void CFG::step3() {
 }
 
 void CFG::step4() {
-    //
+    //we will add non-terminals of type "Xnumber" where numbers starts from 1
+    for (auto p : P) {
+        for (auto rhs : p.second) {
+
+        }
+    }
 }
 
 #pragma region HELPERS
@@ -346,6 +352,16 @@ void CFG::removeInaccessible() {
         }
     }
     N = accessible;
+}
+bool CFG::hasLambda() {
+    for (auto p : P) {
+        for (auto rhs : p.second) {
+            if (rhs == "#" && p.first!=S) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 #pragma endregion

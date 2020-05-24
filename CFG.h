@@ -34,13 +34,14 @@ public:
     void step2(); //removing lambda-productions
     void step3(); //eliminating N->N productions
     //step1() needs to be called once again after step3() is done
-    void step4();
+    void step4(); //replacing terminals that are part of a word with len>=2 with new non-terminals
 
     //HELPER METHODS:
 
     set<string> usableN(); //returns the usable non-terminals
     void removeUnusable(); //removes unusable non-terminals and productions
     void removeInaccessible(); //removes inaccessbile non-terminals and productions
+    bool hasLambda();
 
 };
 

@@ -26,8 +26,8 @@ public:
     //METHODS FOR TESTING:
 
     friend void config1(CFG&); //used a custom CFG for testing
-    friend void config2(CFG&); //-//-
-    friend void config3(CFG&);
+    friend void config2(CFG&); //used a custom CFG for testing
+    friend void config3(CFG&); //used a custom CFG for testing
 
 protected:
 

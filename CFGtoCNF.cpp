@@ -5,7 +5,7 @@ using namespace std;
 
 int main()
 {
-	cout << "Test Lab: " << endl;
+	cout << "Test 1 (lab): " << endl;
 	CFG g1;
 	config1(g1);
 	g1.printGrammar();
@@ -13,9 +13,9 @@ int main()
 	g1.toCNF();
 	g1.printGrammar();
 
-	cout << "-------------------a" << endl;
+	cout << "-------------------" << endl;
 
-	cout << "Test Sem: " << endl;
+	cout << "Test 2(sem): " << endl;
 	CFG testSeminar;
 	config2(testSeminar);
 	testSeminar.printGrammar();
@@ -24,5 +24,4 @@ int main()
 	testSeminar.printGrammar();
 
 	cout << "-------------------" << endl;
-
 }

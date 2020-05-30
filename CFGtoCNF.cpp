@@ -13,7 +13,7 @@ int main()
 	g1.toCNF();
 	g1.printGrammar();
 
-	cout << "-------------------" << endl;
+	cout << "-------------------a" << endl;
 
 	cout << "Test Sem: " << endl;
 	CFG testSeminar;
